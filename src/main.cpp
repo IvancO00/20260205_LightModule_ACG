@@ -1,6 +1,9 @@
 #include <Arduino.h>
 #include "Adafruit_TLC5947.h"
 
+//Limit max current at 30mA --> Max at 50%
+#define TOTAL_MAX_POWER 4095*3*0.6
+
 // --- PIN CONFIGURATION (ATmega328PB) ---
 // Based on MiniCore / Standard Arduino Uno mapping for PORTB
 #define DATA_PIN  11  // PB3 (MOSI) -> SIN
@@ -26,6 +29,13 @@ void setLedColor(uint8_t ledIndex, uint16_t r, uint16_t g, uint16_t b) {
   uint16_t baseChannel = ledIndex * 3;
   
   if (baseChannel > 21) return; // Protection (chip has 24 channels, but we only use up to 11)
+  if (r+g+b > TOTAL_MAX_POWER) {
+    // Scale down to fit max power
+    float scale = (float)TOTAL_MAX_POWER / (r + g + b);
+    r = (uint16_t)(r * scale);
+    g = (uint16_t)(g * scale);
+    b = (uint16_t)(b * scale);
+  }
 
   tlc.setPWM(baseChannel + 0, r); // Red
   tlc.setPWM(baseChannel + 1, g); // Green
@@ -66,7 +76,7 @@ void setup() {
   // Initial Test: All White
   for(int i=0; i<4; i++) setLedColor(i, 4095, 4095, 4095);
   tlc.write();
-  delay(3000);
+  delay(20000);
   
   // Turn off
   for(int i=0; i<4; i++) setLedColor(i, 0, 0, 0);
