@@ -1,0 +1,31 @@
+Comment,Designator,Footprint,LCSC,Quantity
+0.1uF,C1,C_0805_2012Metric,C476766,1
+1.6k,R1,R_0603_1608Metric,C351670,1
+10 uF,C2,C_0805_2012Metric,C89827,1
+10k,"R2,R5",R_0603_1608Metric,C98220,2
+1k,R3,R_0603_1608Metric,C491209,1
+22 pF,"C3,C4",C_0805_2012Metric,C24658,2
+ATMEGA328PB-MUR,IC1,QFN50P500X500X90-33N-D,C2651953,1
+Crystal_GND24,Y1,Crystal_SMD_2520-4Pin_2.5x2.0mm,C655061,1
+FLASH,J2,PinSocket_2x03_P2.54mm_Vertical_SMD,C5160818,1
+TJA1028TK/5V0/20/J,U2,HVSON8_3X3_NXP,C3229277,1
+TLC5947RHB,U1,QFN-32-1EP_5x5mm_P0.5mm_EP3.3x3.3mm_ThermalVias,C181402,1
+TestPoint_Keystone_5015_Micro_Mini,BTN,TestPoint_Keystone_5015_Micro_Mini,,1
+TestPoint,TP8,TestPoint_Pad_D2.0mm,,1
+TestPoint,TP9,TestPoint_Pad_D2.0mm,,1
+TestPoint,TP7,TestPoint_Pad_D2.0mm,,1
+TestPoint,TP3,TestPoint_Pad_D2.0mm,,1
+TestPoint_Keystone_5015_Micro_Mini,GND,TestPoint_Keystone_5015_Micro_Mini,,1
+TestPoint,TP4,TestPoint_Pad_D2.0mm,,1
+TestPoint,TP6,TestPoint_Pad_D2.0mm,,1
+TestPoint,TP5,TestPoint_Pad_D2.0mm,,1
+TestPoint,TP12,TestPoint_Pad_D2.0mm,,1
+TestPoint,TP11,TestPoint_Pad_D2.0mm,,1
+TestPoint,TP10,TestPoint_Pad_D2.0mm,,1
+TestPoint,TP1,TestPoint_Pad_D2.0mm,,1
+TestPoint,TP2,TestPoint_Pad_D2.0mm,,1
+RGB_LRTB,L4,LRTB GVSG_OSR,,1
+RGB_LRTB,L3,LRTB GVSG_OSR,,1
+RGB_LRTB,L2,LRTB GVSG_OSR,,1
+RGB_LRTB,L1,LRTB GVSG_OSR,,1
+Conn_01x04_Pin,J1,MCON1.2-4,,1

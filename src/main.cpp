@@ -2,7 +2,7 @@
 #include "Adafruit_TLC5947.h"
 
 //Limit max current at 30mA --> Max at 50%
-#define TOTAL_MAX_POWER 4095*3*0.6
+#define TOTAL_MAX_POWER 4095*3/2
 
 // --- PIN CONFIGURATION (ATmega328PB) ---
 // Based on MiniCore / Standard Arduino Uno mapping for PORTB
@@ -61,22 +61,22 @@ void setup() {
   // Initial Test: All Red
   for(int i=0; i<4; i++) setLedColor(i, 4095, 0, 0);
   tlc.write();
-  delay(1000);
+  delay(500);
   
   // Initial Test: All Green
   for(int i=0; i<4; i++) setLedColor(i, 0, 4095, 0);
   tlc.write();
-  delay(1000);
+  delay(500);
   
   // Initial Test: All Blue
   for(int i=0; i<4; i++) setLedColor(i, 0, 0, 4095);
   tlc.write();
-  delay(1000);
+  delay(500);
 
   // Initial Test: All White
   for(int i=0; i<4; i++) setLedColor(i, 4095, 4095, 4095);
   tlc.write();
-  delay(20000);
+  delay(500);
   
   // Turn off
   for(int i=0; i<4; i++) setLedColor(i, 0, 0, 0);
@@ -111,7 +111,61 @@ void colorWheel(uint8_t ledNum, uint16_t wheelPos) {
   setLedColor(ledNum, r, g, b);
 }
 
+void blink_function(int times, int delay_ms) {
+  for (int i = 0; i < times; i++) {
+    // Turn on all LEDs (white)
+    for(int j=0; j<4; j++) setLedColor(j, 4095, 4095, 4095);
+    tlc.write();
+    delay(delay_ms);
+    
+    // Turn off all LEDs
+    for(int j=0; j<4; j++) setLedColor(j, 0, 0, 0);
+    tlc.write();
+    delay(delay_ms);
+  }
+}
+
+void turn_off_all_leds() {
+  for(int i=0; i<4; i++) setLedColor(i, 0, 0, 0);
+  tlc.write();
+}
+
+
+void chargingEffect() {
+  turn_off_all_leds(); // Turn off all LEDs after blinking
+  // Simulate battery charging: dim each LED up to max, then move to next
+  int led = 3;
+  uint16_t brightness = 0;
+
+  while (led >= 0) {
+    brightness += 50;
+    setLedColor(led, 0, brightness, 0); // Green color
+    tlc.write();
+    delay(20);
+    if (brightness > 4095-50) {
+      setLedColor(led, 0, 4095, 0); // Green color
+      brightness = 0;
+      led--;
+
+      if (led == -1) {
+        delay(500); // Short pause before blinking
+        blink_function(5, 200); // Blink all LEDs 3 times at the end of charging
+        
+        turn_off_all_leds(); // Turn off all LEDs after blinking
+      }
+      if (led < 0) {
+        break;
+      }
+    
+    }
+  }
+  
+}
+
 void loop() {
+
+  chargingEffect();
+  
   // Rainbow Wave Effect
   for (int i=0; i<4; i++) {
     // Phase shift for each LED

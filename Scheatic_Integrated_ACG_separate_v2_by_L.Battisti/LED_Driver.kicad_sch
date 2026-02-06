@@ -2899,7 +2899,7 @@
 				)
 			)
 		)
-		(property "Footprint" "00_RA_Library:LRTB GVSG_OSR"
+		(property "Footprint" "00_I_Cagol_FootPrint_library:LRTBGVSR4U4VJW8A8BD83S4U7Z"
 			(at 160.02 90.17 0)
 			(effects
 				(font
@@ -3867,7 +3867,7 @@
 				)
 			)
 		)
-		(property "Footprint" "00_RA_Library:LRTB GVSG_OSR"
+		(property "Footprint" "00_I_Cagol_FootPrint_library:LRTBGVSR4U4VJW8A8BD83S4U7Z"
 			(at 160.02 107.95 0)
 			(effects
 				(font
@@ -5420,7 +5420,7 @@
 				)
 			)
 		)
-		(property "Footprint" "00_RA_Library:LRTB GVSG_OSR"
+		(property "Footprint" "00_I_Cagol_FootPrint_library:LRTBGVSR4U4VJW8A8BD83S4U7Z"
 			(at 160.02 72.39 0)
 			(effects
 				(font
@@ -5675,7 +5675,7 @@
 				)
 			)
 		)
-		(property "Footprint" "00_RA_Library:LRTB GVSG_OSR"
+		(property "Footprint" "00_I_Cagol_FootPrint_library:LRTBGVSR4U4VJW8A8BD83S4U7Z"
 			(at 160.02 54.61 0)
 			(effects
 				(font
