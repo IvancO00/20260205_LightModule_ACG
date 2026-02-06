@@ -111,10 +111,52 @@ void colorWheel(uint8_t ledNum, uint16_t wheelPos) {
   setLedColor(ledNum, r, g, b);
 }
 
-void blink_function(int times, int delay_ms) {
+void blink_white_function(int times, int delay_ms) {
   for (int i = 0; i < times; i++) {
     // Turn on all LEDs (white)
     for(int j=0; j<4; j++) setLedColor(j, 4095, 4095, 4095);
+    tlc.write();
+    delay(delay_ms);
+    
+    // Turn off all LEDs
+    for(int j=0; j<4; j++) setLedColor(j, 0, 0, 0);
+    tlc.write();
+    delay(delay_ms);
+  }
+}
+
+void blink_red_function(int times, int delay_ms) {
+  for (int i = 0; i < times; i++) {
+    // Turn on all LEDs (red)
+    for(int j=0; j<4; j++) setLedColor(j, 4095, 0, 0);
+    tlc.write();
+    delay(delay_ms);
+    
+    // Turn off all LEDs
+    for(int j=0; j<4; j++) setLedColor(j, 0, 0, 0);
+    tlc.write();
+    delay(delay_ms);
+  }
+}
+
+void blink_green_function(int times, int delay_ms) {
+  for (int i = 0; i < times; i++) {
+    // Turn on all LEDs (green)
+    for(int j=0; j<4; j++) setLedColor(j, 0, 4095, 0);
+    tlc.write();
+    delay(delay_ms);
+    
+    // Turn off all LEDs
+    for(int j=0; j<4; j++) setLedColor(j, 0, 0, 0);
+    tlc.write();
+    delay(delay_ms);
+  }
+}
+
+void blink_blue_function(int times, int delay_ms) {
+  for (int i = 0; i < times; i++) {
+    // Turn on all LEDs (blue)
+    for(int j=0; j<4; j++) setLedColor(j, 0, 0, 4095);
     tlc.write();
     delay(delay_ms);
     
@@ -133,6 +175,9 @@ void turn_off_all_leds() {
 
 void chargingEffect() {
   turn_off_all_leds(); // Turn off all LEDs after blinking
+
+  blink_red_function(3, 200); // Blink all LEDs red 3 times at the start of charging
+
   // Simulate battery charging: dim each LED up to max, then move to next
   int led = 3;
   uint16_t brightness = 0;
@@ -141,7 +186,7 @@ void chargingEffect() {
     brightness += 50;
     setLedColor(led, 0, brightness, 0); // Green color
     tlc.write();
-    delay(20);
+    delay(10);
     if (brightness > 4095-50) {
       setLedColor(led, 0, 4095, 0); // Green color
       brightness = 0;
@@ -149,18 +194,14 @@ void chargingEffect() {
 
       if (led == -1) {
         delay(500); // Short pause before blinking
-        blink_function(5, 200); // Blink all LEDs 3 times at the end of charging
+        blink_white_function(5, 200); // Blink all LEDs 3 times at the end of charging
         
         turn_off_all_leds(); // Turn off all LEDs after blinking
-      }
-      if (led < 0) {
-        break;
-      }
-    
-    }
-  }
-  
-}
+        delay(500); // Short pause before next effect
+      };
+    };
+  };
+};
 
 void loop() {
 
