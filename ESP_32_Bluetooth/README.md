@@ -1,6 +1,20 @@
-# PROGETTO CONTROLLER ESP32 BLUETOOTH -> LIN
+# PROGETTO CONTROLLER ESP32 BLE -> LIN (iOS & Android)
 
-Questa cartella contiene il firmware per l'ESP32 che fa da ponte ("bridge") tra il tuo smartphone e la scheda luci LIN.
+Questa cartella contiene il firmware per l'ESP32 configurato come **BLE UART Bridge**.
+Supporta **iPhone (iOS)** e Android grazie all'uso dello standard Bluetooth Low Energy (Nordic UART Service).
+
+## App Consigliata (iPhone/iOS)
+Poiché iOS non supporta il Bluetooth Classico seriale, devi usare un'app BLE UART.
+L'app migliore e più semplice è:
+
+**Adafruit Bluefruit LE Connect**
+1. Scarica l'app dall'App Store.
+2. Apri l'app e cerca il dispositivo **"ESP32_LIN_Control"**.
+3. Clicca su **Connect**.
+4. Seleziona **UART**.
+5. Scrivi i comandi (`R`, `G`, `B`) nel campo di testo e premi Send.
+
+(Alternativa tecnica: **nRF Connect for Mobile**)
 
 ## Hardware Richiesto
 1.  **ESP32 Dev Board** (es. ESP32-WROOM-32)
@@ -18,13 +32,12 @@ Questa cartella contiene il firmware per l'ESP32 che fa da ponte ("bridge") tra 
 | **-** | **RST** | (Lasciare scollegato o HIGH) |
 | **GPIO 5** | **CS / EN** | **IMPORTANTE:** Abilita il chip (Chip Select) |
 
-**Nota sul LIN Click:** 
-1. Assicurati che il jumper `VCC SEL` sia su **3.3V**.
-2. Assicurati che il jumper `JP2 MODE` sia su **MASTER** (o aggiungi resistenza pull-up 1k su LIN se usi scheda slave).
-3. **Collegamento CS:** Il codice usa il **GPIO 5** per abilitare il chip (Pin 'CS' sulla Click Board). Se non lo colleghi, il LIN potrebbe rimanere spento!
-
-## Istruzioni Software
-Poiché questo è un progetto nidificato (una cartella dentro un'altra):
+**Nota sul su iPhone
+1.  Apri **Bluefruit Connect**.
+2.  Connetti a `ESP32_LIN_Control`.
+3.  Vai su **UART**.
+4.  Digita `R` e invia -> il LED LIN dovrebbe diventare ROSSO.
+:
 
 1.  In VS Code, vai su **File > Open Folder...**
 2.  Seleziona la cartella `c:\Embedded_Scripts\20260205_LightModule_ACG\ESP_32_Bluetooth`.
