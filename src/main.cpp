@@ -52,7 +52,7 @@ void setup() {
 
   // Initialize library
   if (!tlc.begin()) {
-    Serial.println("Reset failed");
+    Serial.println("Reset failed"); 
   }
 
   // Enable outputs
