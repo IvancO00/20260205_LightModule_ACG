@@ -350,12 +350,13 @@
             var r = elR.value;
             var g = elG.value;
             var b = elB.value;
-
+            
             //Create Lin command for that specific LED (es: "L,1,2046,0,0" for LED 1 50% RED)
             var cmd = `L,${zoneID},${r},${g},${b}`;
+            sendCommand(cmd);
             printDebug(`Comando zona ${zoneID}: ${cmd}`); // Write in the debug console
             log(`Zone ${zoneId}: ${cmd}`); // Debug visivo
-            sendCommand(cmd);
+            
 
         }
 
