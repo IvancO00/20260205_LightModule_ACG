@@ -167,33 +167,33 @@
     <!-- ZONA 1 -->
     <div class="control-group" style="width: 45%; min-width: 150px;">
         <h3>Zona 1</h3>
-        <label>R</label> <input type="range" id="Z1_R" max="4095" oninput="updateZone(1)">
-        <label>G</label> <input type="range" id="Z1_G" max="4095" oninput="updateZone(1)">
-        <label>B</label> <input type="range" id="Z1_B" max="4095" oninput="updateZone(1)">
+        <label>R</label> <input type="range" id="Z1_R" max="4095" oninput="updateZone(0)">
+        <label>G</label> <input type="range" id="Z1_G" max="4095" oninput="updateZone(0)">
+        <label>B</label> <input type="range" id="Z1_B" max="4095" oninput="updateZone(0)">
     </div>
 
     <!-- ZONA 2 -->
     <div class="control-group" style="width: 45%; min-width: 150px;">
         <h3>Zona 2</h3>
-        <label>R</label> <input type="range" id="Z2_R" max="4095" oninput="updateZone(2)">
-        <label>G</label> <input type="range" id="Z2_G" max="4095" oninput="updateZone(2)">
-        <label>B</label> <input type="range" id="Z2_B" max="4095" oninput="updateZone(2)">
+        <label>R</label> <input type="range" id="Z2_R" max="4095" oninput="updateZone(1)">
+        <label>G</label> <input type="range" id="Z2_G" max="4095" oninput="updateZone(1)">
+        <label>B</label> <input type="range" id="Z2_B" max="4095" oninput="updateZone(1)">
     </div>
 
     <!-- ZONA 3 -->
     <div class="control-group" style="width: 45%; min-width: 150px;">
         <h3>Zona 3</h3>
-        <label>R</label> <input type="range" id="Z3_R" max="4095" oninput="updateZone(3)">
-        <label>G</label> <input type="range" id="Z3_G" max="4095" oninput="updateZone(3)">
-        <label>B</label> <input type="range" id="Z3_B" max="4095" oninput="updateZone(3)">
+        <label>R</label> <input type="range" id="Z3_R" max="4095" oninput="updateZone(2)">
+        <label>G</label> <input type="range" id="Z3_G" max="4095" oninput="updateZone(2)">
+        <label>B</label> <input type="range" id="Z3_B" max="4095" oninput="updateZone(2)">
     </div>
 
     <!-- ZONA 4 -->
     <div class="control-group" style="width: 45%; min-width: 150px;">
         <h3>Zona 4</h3>
-        <label>R</label> <input type="range" id="Z4_R" max="4095" oninput="updateZone(4)">
-        <label>G</label> <input type="range" id="Z4_G" max="4095" oninput="updateZone(4)">
-        <label>B</label> <input type="range" id="Z4_B" max="4095" oninput="updateZone(4)">
+        <label>R</label> <input type="range" id="Z4_R" max="4095" oninput="updateZone(3)">
+        <label>G</label> <input type="range" id="Z4_G" max="4095" oninput="updateZone(3)">
+        <label>B</label> <input type="range" id="Z4_B" max="4095" oninput="updateZone(3)">
     </div>
 
 </div>
@@ -295,7 +295,7 @@
                 let commandToSend = cmd.endsWith('\n') ? cmd : cmd + '\n';
                 let encoder = new TextEncoder();
                 let data = encoder.encode(commandToSend);
-
+                printDebug(`Invio comando: ${commandToSend.trim()}`); // Scrive nella console nera il comando esatto inviato
                 await rxCharacteristic.writeValue(data);
                 log(`Sent: ${cmd}`);
             } catch (error) {
