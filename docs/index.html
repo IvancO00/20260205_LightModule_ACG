@@ -247,6 +247,7 @@
                 log('Requesting Bluetooth Device...');
                 bluetoothDevice = await navigator.bluetooth.requestDevice({
                     //filters: [{ namePrefix: "ESP32" }], // Looks for "ESP32_LIN_Control_Ivan"
+                    acceptAllDevices: true,
                     optionalServices: [serviceUuid]
                 });
 
