@@ -161,6 +161,44 @@
     </div>
 
 
+    <!-- Grid for slider foreach LED -->
+<div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
+
+    <!-- ZONA 1 -->
+    <div class="control-group" style="width: 45%; min-width: 150px;">
+        <h3>Zona 1</h3>
+        <label>R</label> <input type="range" id="Z1_R" max="4095" oninput="updateZone(1)">
+        <label>G</label> <input type="range" id="Z1_G" max="4095" oninput="updateZone(1)">
+        <label>B</label> <input type="range" id="Z1_B" max="4095" oninput="updateZone(1)">
+    </div>
+
+    <!-- ZONA 2 -->
+    <div class="control-group" style="width: 45%; min-width: 150px;">
+        <h3>Zona 2</h3>
+        <label>R</label> <input type="range" id="Z2_R" max="4095" oninput="updateZone(2)">
+        <label>G</label> <input type="range" id="Z2_G" max="4095" oninput="updateZone(2)">
+        <label>B</label> <input type="range" id="Z2_B" max="4095" oninput="updateZone(2)">
+    </div>
+
+    <!-- ZONA 3 -->
+    <div class="control-group" style="width: 45%; min-width: 150px;">
+        <h3>Zona 3</h3>
+        <label>R</label> <input type="range" id="Z3_R" max="4095" oninput="updateZone(3)">
+        <label>G</label> <input type="range" id="Z3_G" max="4095" oninput="updateZone(3)">
+        <label>B</label> <input type="range" id="Z3_B" max="4095" oninput="updateZone(3)">
+    </div>
+
+    <!-- ZONA 4 -->
+    <div class="control-group" style="width: 45%; min-width: 150px;">
+        <h3>Zona 4</h3>
+        <label>R</label> <input type="range" id="Z4_R" max="4095" oninput="updateZone(4)">
+        <label>G</label> <input type="range" id="Z4_G" max="4095" oninput="updateZone(4)">
+        <label>B</label> <input type="range" id="Z4_B" max="4095" oninput="updateZone(4)">
+    </div>
+
+</div>
+
+
 <!-- Custom command input -->
     <div class="control-group">
         <h3>Custom Command</h3>
@@ -208,7 +246,7 @@
             try {
                 log('Requesting Bluetooth Device...');
                 bluetoothDevice = await navigator.bluetooth.requestDevice({
-                    filters: [{ namePrefix: "ESP32" }], // Looks for "ESP32_LIN_Control_Ivan"
+                    //filters: [{ namePrefix: "ESP32" }], // Looks for "ESP32_LIN_Control_Ivan"
                     optionalServices: [serviceUuid]
                 });
 
@@ -244,6 +282,7 @@
             log('Device disconnected.');
         }
 
+        // This function send a stringcommand directly to the ESP32 via Bluetooth. Usata da tutti i comandi (quick, slider, custom)
         async function sendCommand(cmd) {
             if (!rxCharacteristic) {
                 log('Not connected!');
@@ -286,9 +325,43 @@
             sendCommand(comandoComposto);
         }
 
-        /*
-        Quando viene premuto ALL OFF, viene chiamata questa funziona che resetta gli slider a 0
-        */
+        //update single LED with value of the dedicated sliders
+        //zoneId: numero da 1 a 4 passato dall'HTML
+        function updateZone(zoneID){
+
+            //Build dynamically the name of the ID (es: Z1_R, Z1_G, Z1_B for LED 1)
+            var idR = "Z" + zoneID + "_R";
+            var idG = "Z" + zoneID + "_G";
+            var idB = "Z" + zoneID + "_B";
+
+            //Find element in the page
+            var elR = document.getElementById(idR);
+            var elG = document.getElementById(idG);
+            var elB = document.getElementById(idB);
+
+            // exit if they don't exist (should never happen)
+            if(!elR || !elG || !elB) {
+                printDebug(`Errore: non trovo gli slider per la zona ${zoneID}`);
+                return;
+            }
+
+            // read the values
+            var r = elR.value;
+            var g = elG.value;
+            var b = elB.value;
+
+            //Create Lin command for that specific LED (es: "L,1,2046,0,0" for LED 1 50% RED)
+            var cmd = `L,${zoneID},${r},${g},${b}`;
+            printDebug(`Comando zona ${zoneID}: ${cmd}`); // Write in the debug console
+            log(`Zone ${zoneId}: ${cmd}`); // Debug visivo
+            sendCommand(cmd);
+
+        }
+
+
+
+
+        //Quando viene premuto ALL OFF, viene chiamata questa funziona che resetta gli slider a 0
        function resetSlidersAndOff() {
         // porta visivamente gli slider a 0
         document.getElementById('SliderR').value = 0;
@@ -299,10 +372,8 @@
         updateRGB(); // Questo invierà "L,99,0,0,0" che è l'equivalente di ALL OFF
        }
 
-       /*
-        Function to send custom command from a text input field.
-       */
-        function sendCustom() {
+        // Function to send custom command from a text input field.
+       function sendCustom() {
             const cmd = document.getElementById('customCmd').value;
             if (cmd) sendCommand(cmd);
         }
@@ -314,6 +385,8 @@
             // Aggiunge la riga in cima (così vedi sempre l'ultima)
             dbg.innerHTML = `[${time}] ${msg}<br>` + dbg.innerHTML;
         }
+
+
     </script>
 </body>
 </html>
