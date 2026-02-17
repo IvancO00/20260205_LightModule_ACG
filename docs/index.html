@@ -116,15 +116,34 @@
 
     <button id="connectBtn" class="btn-connect">Connect to ESP32</button>
 
+    <!-- Quick control buttons for common commands -->
     <div class="control-group">
         <h3>Quick Controls</h3>
         <button class="btn-red" onclick="sendCommand('L,99,4095,0,0')">ALL RED</button>
         <button class="btn-green" onclick="sendCommand('L,99,0,4095,0')">ALL GREEN</button>
         <button class="btn-blue" onclick="sendCommand('L,99,0,0,4095')">ALL BLUE</button>
         <button class="btn-white" onclick="sendCommand('L,99,4095,4095,4095')">ALL WHITE</button>
-        <button class="btn-off" onclick="sendCommand('CLEAR')">ALL OFF</button>
+        
+        <!--Invia il segnale "CLEAR" per spegnere e resetta gli slider a 0 -->
+        <button class="btn-off" onclick="resetSlidersAndOff()">ALL OFF</button> 
     </div>
 
+    <!-- Sliders for brightness control -->
+     <div class="control-group">
+        <h3>Mixer RGB</h3>
+        <!-- Range da 0 a 4095. onchange = aggiorna quando rilasci (più sicuro per il Bluetooth) -->
+        <label>Red (0-4095)</label>
+        <input type="range" id="SliderR" min="0" max="4095" value="0" onchange="updateRGB()">
+
+        <label>Green (0-4095)</label>
+        <input type="range" id="SliderG" min="0" max="4095" value="0" onchange="updateRGB()">
+
+        <label>Blue (0-4095)</label>
+        <input type="range" id="SliderB" min="0" max="4095" value="0" onchange="updateRGB()">
+    </div>
+
+
+<!-- Custom command input -->
     <div class="control-group">
         <h3>Custom Command</h3>
         <input type="text" id="customCmd" placeholder="e.g., L,1,4095,0,0">
@@ -212,6 +231,43 @@
                 log('Send failed: ' + error);
             }
         }
+
+        /* 
+           Questa funzione viene chiamata ogni volta che muovi UNO QUALSIASI degli slider.
+           Legge TUTTI e tre i valori attuali e invia un unico comando combinato.
+        */
+        function updateRGB() {
+            // 1. Recupera i valori attuali dai tre slider HTML usando i loro ID
+            let r = document.getElementById('sliderR').value;
+            let g = document.getElementById('sliderG').value;
+            let b = document.getElementById('sliderB').value;
+        
+            // 2. Costruisci il comando LIN composto
+            // Esempio risultato: "L,99,4095,2000,0" (Rosso max, Verde medio, Blu spento)
+            let comandoComposto = `L,99,${r},${g},${b}`;
+        
+            // 3. Invia tramite Bluetooth
+            // window.log è la funzione che scrive nel riquadro bianco in basso
+            if(window.log) window.log(`Mixer RGB: R=${r} G=${g} B=${b}`); 
+
+            sendCommand(comandoComposto);
+        }
+
+        /*
+        Quando viene premuto ALL OFF, viene chiamata questa funziona che resetta gli slider a 0
+        */
+       function resetSlidersAndOff() {
+        // porta visivamente gli slider a 0
+        document.getElementById('sliderR').value = 0;
+        document.getElementById('sliderG').value = 0;
+        document.getElementById('sliderB').value = 0;
+
+        // Invia anche il comando di spegnimento
+        sendCommand('CLEAR');
+       }
+
+
+
 
         function sendCustom() {
             const cmd = document.getElementById('customCmd').value;
