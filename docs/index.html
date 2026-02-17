@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LIN Light Controller</title>
+    
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -106,9 +107,20 @@
             border: 1px solid #ddd;
             border-radius: 5px;
         }
+
+        .version-label {
+            position: absolute; /* Fondamentale: permette di posizionarlo dove vuoi */
+            top: 20px;          /* Distanza dall'alto */
+            right: 20px;        /* Distanza da destra */
+            font-size: 12px;    /* Testo piccolino */
+            color: #999;        /* Grigio chiaro discreto */
+            font-family: monospace; /* Un tocco "tecnico" */
+        }
     </style>
 </head>
 <body>
+    <!-- Versione della pagina -->
+    <div class="version-label">ACG Light v1.1</div>
 
     <h1>LIN Light Controller</h1>
 
@@ -151,6 +163,19 @@
     </div>
 
     <div id="log" class="log"></div>
+
+    <!-- NUOVA AREA DEBUG -->
+    <h3>Debug Console</h3>
+    <div id="debugConsole" class="log" style="background-color: #000; color: #0f0; font-family: monospace; height: 150px;"></div>
+
+
+
+
+
+
+
+
+
 
     <script>
         // Nordic UART Service (NUS) UUIDs
@@ -222,7 +247,7 @@
             try {
                 // Ensure data ends with newline \n
                 let commandToSend = cmd.endsWith('\n') ? cmd : cmd + '\n';
-                let encoder = new TextEncoder('utf-8');
+                let encoder = new TextEncoder();
                 let data = encoder.encode(commandToSend);
 
                 await rxCharacteristic.writeValue(data);
@@ -237,6 +262,7 @@
            Legge TUTTI e tre i valori attuali e invia un unico comando combinato.
         */
         function updateRGB() {
+            printDebug("Aggiornamento RGB in corso..."); // Scrive nella console nera ogni volta che viene chiamata
             // 1. Recupera i valori attuali dai tre slider HTML usando i loro ID
             let r = document.getElementById('SliderR').value;
             let g = document.getElementById('SliderG').value;
@@ -250,6 +276,7 @@
             // window.log è la funzione che scrive nel riquadro bianco in basso
             if(window.log) window.log(`Mixer RGB: R=${r} G=${g} B=${b}`); 
 
+            printDebug(`Comando RGB composto: ${comandoComposto}`); // Scrive nella console nera
             sendCommand(comandoComposto);
         }
 
@@ -263,15 +290,22 @@
         document.getElementById('SliderB').value = 0;
 
         // Invia anche il comando di spegnimento
-        sendCommand('CLEAR');
+        updateRGB(); // Questo invierà "L,99,0,0,0" che è l'equivalente di ALL OFF
        }
-
-
 
 
         function sendCustom() {
             const cmd = document.getElementById('customCmd').value;
             if (cmd) sendCommand(cmd);
+        }
+
+
+        // Funzione per scrivere nella nuova console nera
+        function printDebug(msg) {
+            var dbg = document.getElementById('debugConsole');
+            var time = new Date().toLocaleTimeString();
+            // Aggiunge la riga in cima (così vedi sempre l'ultima)
+            dbg.innerHTML = `[${time}] ${msg}<br>` + dbg.innerHTML;
         }
     </script>
 </body>
