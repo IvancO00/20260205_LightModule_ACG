@@ -238,9 +238,9 @@
         */
         function updateRGB() {
             // 1. Recupera i valori attuali dai tre slider HTML usando i loro ID
-            let r = document.getElementById('sliderR').value;
-            let g = document.getElementById('sliderG').value;
-            let b = document.getElementById('sliderB').value;
+            let r = document.getElementById('SliderR').value;
+            let g = document.getElementById('SliderG').value;
+            let b = document.getElementById('SliderB').value;
         
             // 2. Costruisci il comando LIN composto
             // Esempio risultato: "L,99,4095,2000,0" (Rosso max, Verde medio, Blu spento)
@@ -258,9 +258,9 @@
         */
        function resetSlidersAndOff() {
         // porta visivamente gli slider a 0
-        document.getElementById('sliderR').value = 0;
-        document.getElementById('sliderG').value = 0;
-        document.getElementById('sliderB').value = 0;
+        document.getElementById('SliderR').value = 0;
+        document.getElementById('SliderG').value = 0;
+        document.getElementById('SliderB').value = 0;
 
         // Invia anche il comando di spegnimento
         sendCommand('CLEAR');
