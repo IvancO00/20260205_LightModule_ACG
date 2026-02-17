@@ -263,6 +263,22 @@ void processLinCommand() {
     else if (inputString == "CLEAR") {
         turn_off_all_leds();
     }
+    else if (inputString == "TEST") {
+        // Run a quick test sequence
+        for(int i=0; i<4; i++) setLedColor(i, 4095, 0, 0); // Red
+        tlc.write();
+        delay(500);
+        for(int i=0; i<4; i++) setLedColor(i, 0, 4095, 0); // Green
+        tlc.write();
+        delay(500);
+        for(int i=0; i<4; i++) setLedColor(i, 0, 0, 4095); // Blue
+        tlc.write();
+        delay(500);
+        for(int i=0; i<4; i++) setLedColor(i, 4095, 4095, 4095); // White
+        tlc.write();
+        delay(1000);
+        turn_off_all_leds(); // Turn off after test
+    }
     
     // Clear buffer
     inputString = "";
