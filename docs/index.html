@@ -169,6 +169,23 @@
             <h3 style="margin: 0 0 10px 0; font-size: 16px;">Zona 1</h3>
             <div style="display: flex; align-items: center; margin-bottom: 5px;">
                 <span style="width: 20px; color: red; font-weight: bold;">R</span>
+                <input type="range" id="Z0_R" max="4095" value="0" oninput="updateZone(0)" style="flex-grow: 1;">
+            </div>
+            <div style="display: flex; align-items: center; margin-bottom: 5px;">
+                <span style="width: 20px; color: green; font-weight: bold;">G</span>
+                <input type="range" id="Z0_G" max="4095" value="0" oninput="updateZone(0)" style="flex-grow: 1;">
+            </div>
+            <div style="display: flex; align-items: center;">
+                <span style="width: 20px; color: blue; font-weight: bold;">B</span>
+                <input type="range" id="Z0_B" max="4095" value="0" oninput="updateZone(0)" style="flex-grow: 1;">
+            </div>
+        </div>
+
+        <!-- ZONA 2 -->
+        <div class="control-group" style="padding: 10px;">
+            <h3 style="margin: 0 0 10px 0; font-size: 16px;">Zona 2</h3>
+            <div style="display: flex; align-items: center; margin-bottom: 5px;">
+                <span style="width: 20px; color: red; font-weight: bold;">R</span>
                 <input type="range" id="Z1_R" max="4095" value="0" oninput="updateZone(1)" style="flex-grow: 1;">
             </div>
             <div style="display: flex; align-items: center; margin-bottom: 5px;">
@@ -181,9 +198,9 @@
             </div>
         </div>
 
-        <!-- ZONA 2 -->
+        <!-- ZONA 3 -->
         <div class="control-group" style="padding: 10px;">
-            <h3 style="margin: 0 0 10px 0; font-size: 16px;">Zona 2</h3>
+            <h3 style="margin: 0 0 10px 0; font-size: 16px;">Zona 3</h3>
             <div style="display: flex; align-items: center; margin-bottom: 5px;">
                 <span style="width: 20px; color: red; font-weight: bold;">R</span>
                 <input type="range" id="Z2_R" max="4095" value="0" oninput="updateZone(2)" style="flex-grow: 1;">
@@ -198,9 +215,9 @@
             </div>
         </div>
 
-        <!-- ZONA 3 -->
+        <!-- ZONA 4 -->
         <div class="control-group" style="padding: 10px;">
-            <h3 style="margin: 0 0 10px 0; font-size: 16px;">Zona 3</h3>
+            <h3 style="margin: 0 0 10px 0; font-size: 16px;">Zona 4</h3>
             <div style="display: flex; align-items: center; margin-bottom: 5px;">
                 <span style="width: 20px; color: red; font-weight: bold;">R</span>
                 <input type="range" id="Z3_R" max="4095" value="0" oninput="updateZone(3)" style="flex-grow: 1;">
@@ -212,23 +229,6 @@
             <div style="display: flex; align-items: center;">
                 <span style="width: 20px; color: blue; font-weight: bold;">B</span>
                 <input type="range" id="Z3_B" max="4095" value="0" oninput="updateZone(3)" style="flex-grow: 1;">
-            </div>
-        </div>
-
-        <!-- ZONA 4 -->
-        <div class="control-group" style="padding: 10px;">
-            <h3 style="margin: 0 0 10px 0; font-size: 16px;">Zona 4</h3>
-            <div style="display: flex; align-items: center; margin-bottom: 5px;">
-                <span style="width: 20px; color: red; font-weight: bold;">R</span>
-                <input type="range" id="Z4_R" max="4095" value="0" oninput="updateZone(4)" style="flex-grow: 1;">
-            </div>
-            <div style="display: flex; align-items: center; margin-bottom: 5px;">
-                <span style="width: 20px; color: green; font-weight: bold;">G</span>
-                <input type="range" id="Z4_G" max="4095" value="0" oninput="updateZone(4)" style="flex-grow: 1;">
-            </div>
-            <div style="display: flex; align-items: center;">
-                <span style="width: 20px; color: blue; font-weight: bold;">B</span>
-                <input type="range" id="Z4_B" max="4095" value="0" oninput="updateZone(4)" style="flex-grow: 1;">
             </div>
         </div>
 
@@ -405,6 +405,22 @@
         document.getElementById('SliderR').value = 0;
         document.getElementById('SliderG').value = 0;
         document.getElementById('SliderB').value = 0;
+
+        document.getElementById('Z0_R').value = 0;
+        document.getElementById('Z0_G').value = 0;
+        document.getElementById('Z0_B').value = 0;
+
+        document.getElementById('Z1_R').value = 0;
+        document.getElementById('Z1_G').value = 0;
+        document.getElementById('Z1_B').value = 0;
+
+        document.getElementById('Z2_R').value = 0;
+        document.getElementById('Z2_G').value = 0;
+        document.getElementById('Z2_B').value = 0;
+
+        document.getElementById('Z3_R').value = 0;
+        document.getElementById('Z3_G').value = 0;
+        document.getElementById('Z3_B').value = 0;
 
         // Invia anche il comando di spegnimento
         updateRGB(); // Questo invierà "L,99,0,0,0" che è l'equivalente di ALL OFF
