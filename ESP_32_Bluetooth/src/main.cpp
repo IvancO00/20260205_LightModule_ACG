@@ -41,16 +41,31 @@ class MyCallbacks: public BLECharacteristicCallbacks {
       std::string rxValue = pCharacteristic->getValue();
 
       if (rxValue.length() > 0) {
+        String cmd = "";
         Serial.print("Received from Phone: ");
         for (int i = 0; i < rxValue.length(); i++) {
           Serial.print(rxValue[i]);
-          // Forward character to LIN Bus
-          Serial2.write(rxValue[i]);
+          cmd += (char)rxValue[i];
         }
         Serial.println();
+        
+        // Ensure command ends with newline for LIN protocol
+        if (!cmd.endsWith("\n")) {
+           cmd += "\n";
+        }
+        
+        // Forward to LIN Bus
+        Serial2.print(cmd);
       }
     }
 };
+
+void sendLinCommand(String cmd) {
+    if (!cmd.endsWith("\n")) cmd += "\n";
+    Serial2.print(cmd);
+    Serial.println("LIN TX: " + cmd);
+    delay(500); // Small delay between test commands
+}
 
 void setup() {
   Serial.begin(115200);
@@ -63,6 +78,16 @@ void setup() {
 
   // 2. Setup LIN Serial (UART2)
   Serial2.begin(19200, SERIAL_8N1, RXD2, TXD2);
+  
+  delay(1000); // Wait for LIN transceiver stabilization
+
+  // --- LIN CONNECTION TEST ON BOOT ---
+  Serial.println("Starting LIN Test Sequence...");
+  sendLinCommand("L,99,4095,0,0"); // All RED
+  sendLinCommand("L,99,0,4095,0"); // All GREEN
+  sendLinCommand("L,99,0,0,4095"); // All BLUE
+  sendLinCommand("CLEAR");         // All OFF
+  Serial.println("LIN Test Sequence Complete.");
 
   // 3. Setup BLE
   BLEDevice::init("ESP32_LIN_Control_Ivan"); // Device Name

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LIN Light Controller</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f0f0f5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            margin: 0;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .status {
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            background-color: #ddd;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .status.connected {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status.disconnected {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .control-group {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        button {
+            padding: 15px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            font-weight: 600;
+        }
+
+        button:active {
+            opacity: 0.7;
+        }
+
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .btn-connect {
+            background-color: #007bff;
+            color: white;
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 20px;
+        }
+
+        .btn-red { background-color: #ff3b30; color: white; }
+        .btn-green { background-color: #34c759; color: white; }
+        .btn-blue { background-color: #007aff; color: white; }
+        .btn-off { background-color: #8e8e93; color: white; }
+
+        input[type="text"] {
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .log {
+            font-family: monospace;
+            font-size: 12px;
+            color: #666;
+            width: 100%;
+            max-width: 400px;
+            height: 100px;
+            overflow-y: auto;
+            background: #fff;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>LIN Light Controller</h1>
+
+    <div id="status" class="status disconnected">Disconnected</div>
+
+    <button id="connectBtn" class="btn-connect">Connect to ESP32</button>
+
+    <div class="control-group">
+        <h3>Quick Controls</h3>
+        <button class="btn-red" onclick="sendCommand('L,99,4095,0,0')">ALL RED</button>
+        <button class="btn-green" onclick="sendCommand('L,99,0,4095,0')">ALL GREEN</button>
+        <button class="btn-blue" onclick="sendCommand('L,99,0,0,4095')">ALL BLUE</button>
+        <button class="btn-off" onclick="sendCommand('CLEAR')">ALL OFF</button>
+    </div>
+
+    <div class="control-group">
+        <h3>Custom Command</h3>
+        <input type="text" id="customCmd" placeholder="e.g., L,1,4095,0,0">
+        <button style="background-color: #5856d6; color: white;" onclick="sendCustom()">Send</button>
+    </div>
+
+    <div id="log" class="log"></div>
+
+    <script>
+        // Nordic UART Service (NUS) UUIDs
+        const serviceUuid = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
+        const characteristicUuidRx = "6e400002-b5a3-f393-e0a9-e50e24dcca9e"; // RX on ESP32 (Write) for phone to send
+        const characteristicUuidTx = "6e400003-b5a3-f393-e0a9-e50e24dcca9e"; // TX on ESP32 (Notify)
+
+        let bluetoothDevice;
+        let rxCharacteristic; // This is the one we write TO
+        let txCharacteristic; // This is the one we receive FROM
+
+        const connectBtn = document.getElementById('connectBtn');
+        const statusDiv = document.getElementById('status');
+        const logDiv = document.getElementById('log');
+
+        function log(message) {
+            const entry = document.createElement('div');
+            entry.textContent = `> ${message}`;
+            logDiv.appendChild(entry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        connectBtn.addEventListener('click', async () => {
+            try {
+                log('Requesting Bluetooth Device...');
+                bluetoothDevice = await navigator.bluetooth.requestDevice({
+                    filters: [{ namePrefix: "ESP32" }], // Looks for "ESP32_LIN_Control_Ivan"
+                    optionalServices: [serviceUuid]
+                });
+
+                bluetoothDevice.addEventListener('gattserverdisconnected', onDisconnected);
+
+                log('Connecting to GATT Server...');
+                const server = await bluetoothDevice.gatt.connect();
+
+                log('Getting Service...');
+                const service = await server.getPrimaryService(serviceUuid);
+
+                log('Getting Characteristics...');
+                rxCharacteristic = await service.getCharacteristic(characteristicUuidRx); // We write to this
+                // txCharacteristic = await service.getCharacteristic(characteristicUuidTx); // Optional: Read from ESP32
+
+                statusDiv.textContent = 'Connected';
+                statusDiv.className = 'status connected';
+                connectBtn.disabled = true;
+                connectBtn.textContent = "Connected";
+                
+                log('Ready to send commands!');
+
+            } catch (error) {
+                log('Argh! ' + error);
+            }
+        });
+
+        function onDisconnected(event) {
+            statusDiv.textContent = 'Disconnected';
+            statusDiv.className = 'status disconnected';
+            connectBtn.disabled = false;
+            connectBtn.textContent = "Connect to ESP32";
+            log('Device disconnected.');
+        }
+
+        async function sendCommand(cmd) {
+            if (!rxCharacteristic) {
+                log('Not connected!');
+                return;
+            }
+
+            try {
+                // Ensure data ends with newline \n
+                let commandToSend = cmd.endsWith('\n') ? cmd : cmd + '\n';
+                let encoder = new TextEncoder('utf-8');
+                let data = encoder.encode(commandToSend);
+
+                await rxCharacteristic.writeValue(data);
+                log(`Sent: ${cmd}`);
+            } catch (error) {
+                log('Send failed: ' + error);
+            }
+        }
+
+        function sendCustom() {
+            const cmd = document.getElementById('customCmd').value;
+            if (cmd) sendCommand(cmd);
+        }
+    </script>
+</body>
+</html>

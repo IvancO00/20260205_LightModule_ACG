@@ -11,6 +11,12 @@
 #define LATCH_PIN 10  // PB2 (SS)   -> XLAT
 #define BLANK_PIN 9   // PB1        -> BLANK
 
+// --- LIN TRANSCEIVER (TJA1028) PINS ---
+// From schematic analysis
+#define LIN_EN_PIN   3  // PD3
+#define LIN_RST_PIN  2  // PD2 
+// RX is D0, TX is D1 (Hardware Serial)
+
 // Number of TLC5947 drivers connected in series (you have 1)
 #define NUM_TLC5974 1
 
@@ -24,6 +30,14 @@ Adafruit_TLC5947 tlc = Adafruit_TLC5947(NUM_TLC5974, CLOCK_PIN, DATA_PIN, LATCH_
 // LED4: R3, G3, B3 -> Ch 9, 10, 11
 
 void setLedColor(uint8_t ledIndex, uint16_t r, uint16_t g, uint16_t b) {
+  // If ledIndex is 99, apply to ALL LEDs
+  if(ledIndex == 99) {
+     for(int i=0; i<4; i++) {
+        setLedColor(i, r, g, b);
+     }
+     return;
+  }
+
   // Each LED occupies 3 consecutive channels
   // ledIndex: 0 for LED1, 1 for LED2, etc.
   uint16_t baseChannel = ledIndex * 3;
@@ -43,8 +57,20 @@ void setLedColor(uint8_t ledIndex, uint16_t r, uint16_t g, uint16_t b) {
 }
 
 void setup() {
-  Serial.begin(9600);
-  Serial.println("TLC5947 Test Start");
+  // 1. Initialize LIN Transceiver Control Pins
+  pinMode(LIN_EN_PIN, OUTPUT);
+  pinMode(LIN_RST_PIN, OUTPUT);
+  
+  // Create rising edge for RST and Enable HIGH for Normal Mode
+  digitalWrite(LIN_RST_PIN, LOW);
+  digitalWrite(LIN_EN_PIN, HIGH);
+  delay(10);
+  digitalWrite(LIN_RST_PIN, HIGH); // Release Reset
+  delay(10);
+
+  // 2. Initialize Serial (LIN Bus)
+  Serial.begin(19200); // Standard LIN Speed
+  Serial.println("LIN_READY");
 
   // BLANK pin configuration: must be LOW to turn on LEDs
   pinMode(BLANK_PIN, OUTPUT);
@@ -52,7 +78,7 @@ void setup() {
 
   // Initialize library
   if (!tlc.begin()) {
-    Serial.println("Reset failed"); 
+    Serial.println("ERR_TLC"); 
   }
 
   // Enable outputs
@@ -61,22 +87,22 @@ void setup() {
   // Initial Test: All Red
   for(int i=0; i<4; i++) setLedColor(i, 4095, 0, 0);
   tlc.write();
-  delay(500);
+  delay(1000);
   
   // Initial Test: All Green
   for(int i=0; i<4; i++) setLedColor(i, 0, 4095, 0);
   tlc.write();
-  delay(500);
+  delay(1000);
   
   // Initial Test: All Blue
   for(int i=0; i<4; i++) setLedColor(i, 0, 0, 4095);
   tlc.write();
-  delay(500);
+  delay(1000);
 
   // Initial Test: All White
   for(int i=0; i<4; i++) setLedColor(i, 4095, 4095, 4095);
   tlc.write();
-  delay(500);
+  delay(2000);
   
   // Turn off
   for(int i=0; i<4; i++) setLedColor(i, 0, 0, 0);
@@ -85,7 +111,6 @@ void setup() {
 
 // Variables for rainbow effect
 uint16_t hue = 0;
-
 void colorWheel(uint8_t ledNum, uint16_t wheelPos) {
   // Helper function to generate rainbow colors
   // wheelPos from 0 to 4095
@@ -172,7 +197,6 @@ void turn_off_all_leds() {
   tlc.write();
 }
 
-
 void chargingEffect() {
   turn_off_all_leds(); // Turn off all LEDs after blinking
 
@@ -203,21 +227,68 @@ void chargingEffect() {
   };
 };
 
-void loop() {
+// Global buffer for LIN/Serial parsing
+String inputString = "";
+boolean stringComplete = false;
 
-  chargingEffect();
-  
-  // Rainbow Wave Effect
-  for (int i=0; i<4; i++) {
-    // Phase shift for each LED
-    uint16_t localHue = (hue + (i * 1000)) % 4096; 
-    colorWheel(i, localHue);
+void processLinCommand() {
+  if (stringComplete) {
+    // Expected format: "L,idx,r,g,b"
+    // Example: "L,0,4095,0,0" (Red on LED 0)
+    // Example: "L,99,0,0,4095" (Blue on ALL LEDs)
+    // Example: "CHARGE" (Run charging effect once)
+    
+    if (inputString.startsWith("L,")) {
+      // Remove prefix
+      String params = inputString.substring(2);
+      
+      // Manual parsing
+      int firstComma = params.indexOf(',');
+      int secondComma = params.indexOf(',', firstComma + 1);
+      int thirdComma = params.indexOf(',', secondComma + 1);
+      
+      if (firstComma > 0 && secondComma > 0 && thirdComma > 0) {
+        int idx = params.substring(0, firstComma).toInt();
+        int r = params.substring(firstComma + 1, secondComma).toInt();
+        int g = params.substring(secondComma + 1, thirdComma).toInt();
+        int b = params.substring(thirdComma + 1).toInt();
+        
+        setLedColor(idx, r, g, b);
+        tlc.write();
+      }
+    }
+    else if (inputString == "CHARGE") {
+        chargingEffect();
+    }
+    else if (inputString == "CLEAR") {
+        turn_off_all_leds();
+    }
+    
+    // Clear buffer
+    inputString = "";
+    stringComplete = false;
   }
-  
-  tlc.write();
-  
-  hue += 100; // Color change speed
-  if (hue > 4095) hue = 0;
+}
+
+void serialEvent() {
+  while (Serial.available()) {
+    char inChar = (char)Serial.read();
+    if (inChar == '\n') {
+      stringComplete = true;
+    } else if (inChar != '\r') {
+      inputString += inChar;
+    }
+  }
+}
+
+void loop() {
+  // Check for new commands
+  serialEvent(); // Manually calling ensures it runs even if platformio setup differs
+  processLinCommand();
+
+  // Note: if chargingEffect() is called here unconditionally, it will block 
+  // command processing. You might want to remove it or only call it on command.
+  // chargingEffect(); 
   
   delay(20);
 }
