@@ -49,3 +49,15 @@ STEP 3: FLASHING WITH VS CODE
 3. Modify the line `upload_port = COM11` inserting the real COM port of your MKR.
 4. Press the "PlatformIO: Upload" icon (the right arrow in the blue bottom bar, or in the side menu).
 5. To set fuses (fix speed): Run "Burn Bootloader" task.
+
+
+IF ARDUINO LEONARDO IS USED AS PROGRAMMER
+
+MARduInO LEONARDO Pin      ->      Target J2 (ISP Connector)
+-------------------------------------------------------
+VCC (5V)              ->      VCC 
+GND                   ->      GND 
+RST  (Pin 10)         ->      RESET (Pin 1)  (The one defined in the sketch)
+MOSI (Pin 3)          ->      MOSI (Pin 4)
+MISO (Pin 5)          ->      MISO (Pin 2)
+SCK  (Pin 6)          ->      SCK  (Pin 6)
