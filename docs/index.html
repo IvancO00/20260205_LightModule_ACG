@@ -89,6 +89,7 @@
         .btn-off { background-color: #8e8e93; color: white; }
         .btn-charge { background-color: #08efcc; color: rgb(0, 0, 0); }
         .btn-test { background-color: #5856d6; color: white; }
+        .btn-charge_continuous { background-color: #08efcc; color: rgb(0, 0, 0); }  
 
         input[type="text"] {
             padding: 12px;
@@ -144,6 +145,7 @@
         <button class="btn-blue" onclick="sendCommand('L,99,0,0,4095')">ALL BLUE</button>
         <button class="btn-white" onclick="sendCommand('L,99,4095,4095,4095')">ALL WHITE</button>
         <button class="btn-charge" onclick="sendCommand('CHARGE')">CHARGING EFFECT</button>
+        <button class="btn-charge_continuous" onclick="sendCommand('CHARGE_CONTINUOUS')">CHARGING EFFECT CONTINUOUS</button>
         <button class="btn-test" onclick="sendCommand('TEST')">TEST LEDs</button>
         <!--Invia il segnale "CLEAR" per spegnere e resetta gli slider a 0 -->
         <button class="btn-off" onclick="resetSlidersAndOff()">ALL OFF</button> 
@@ -398,8 +400,6 @@
             
 
         }
-
-
 
 
         //Quando viene premuto ALL OFF, viene chiamata questa funziona che resetta gli slider a 0

@@ -279,6 +279,12 @@ void processLinCommand() {
         delay(1000);
         turn_off_all_leds(); // Turn off after test
     }
+
+    else if (inputString == "CHARGE_CONTINUOUS") {
+        while(inputString != "CLEAR") { // Run charging effect continuously until "CLEAR" command is received
+            chargingEffect();
+        }
+    }
     
     // Clear buffer
     inputString = "";
